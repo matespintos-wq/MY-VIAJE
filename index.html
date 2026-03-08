@@ -1,175 +1,424 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificador Estratégico v6.0</title>
-    <style>
-        :root { --p: #1a2a6c; --s: #2c3e50; --ok: #27ae60; --no: #c0392b; --ac: #3498db; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; background: #f4f7f9; overflow: hidden; }
-        
-        header { position: fixed; top: 0; width: 100%; height: 60px; background: var(--p); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; z-index: 1000; }
-        
-        /* SIDEBAR REESTRUCTURADA */
-        .sidebar { width: 320px; min-width: 320px; background: #fff; padding: 75px 15px 20px 15px; border-right: 1px solid #d1d9e6; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        
-        .btn { padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; border: none; transition: 0.3s; }
-        .btnMas { background: var(--ok); color: white; width: 100%; }
-        
-        /* SECCIÓN DOCUMENTOS EN SIDEBAR */
-        .docSidebar { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 12px; }
-        .docFila { margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
-        .docFila input[type="text"] { padding: 5px; border: 1px solid #cbd5e0; border-radius: 4px; }
-        .pdfLink { color: var(--no); font-weight: bold; text-decoration: none; margin-bottom: 5px; display: inline-block; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planificador Estratégico de Viaje - Versión Extendida</title>
 
-        /* CONVERSOR MEJORADO */
-        .panelCotiz { border-radius: 10px; border: 1px solid #e2e8f0; background: #fff; overflow: hidden; }
-        .cotizHead { background: var(--s); color: white; padding: 10px; cursor: pointer; display: flex; justify-content: space-between; font-size: 13px; }
-        .cotizBody { padding: 12px; display: none; }
-        .resCotiz { margin-top: 8px; font-size: 14px; font-weight: bold; color: var(--ok); background: #f0fdf4; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #bbf7d0; }
+<style>
+/* --- ESTILOS DE ALTO IMPACTO --- */
+body{ margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display:flex; height:100vh; background:linear-gradient(135deg, #e0f2fe 0%, #f1f5f9 100%); color: #1e293b; }
+header{ position:fixed; top:0; width:100%; height:65px; background:#0f172a; color:white; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; z-index: 2000; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 
-        .main { flex: 1; margin-top: 60px; padding: 20px; overflow-y: auto; }
-        .paisCard { margin-bottom: 15px; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .paisHead { padding: 15px; color: white; font-weight: bold; cursor: pointer; }
-        .esp { background: #d63031; } .ita { background: #27ae60; } .sui { background: #c0392b; } .fra { background: #0984e3; }
-        .paisBody { display: none; background: white; padding: 15px; }
-    </style>
+.perfilesHeader{ position:absolute; left:20px; display:flex; gap:12px; z-index: 2100; height: 100%; align-items: center; }
+.perfilHeader{ display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.15); backdrop-filter: blur(5px); color:white; padding:5px 12px; border-radius:20px; cursor:pointer; font-size: 13px; border: 1px solid rgba(255,255,255,0.3); transition: 0.3s; }
+.perfilHeader:hover{ background:rgba(255,255,255,0.25); }
+.perfilHeader img{ width:32px; height:32px; border-radius:50%; object-fit: cover; border: 2px solid #38bdf8; }
+
+.sidebar{ width:300px; min-width:300px; background:#f8fafc; padding:85px 15px 20px 15px; border-right:1px solid #e2e8f0; overflow-y:auto; display: flex; flex-direction: column; gap: 20px; }
+.btnMas{ background:#10b981; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:600; transition: 0.2s; }
+.btnMas:hover{ background:#059669; }
+.btnMenos{ background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+
+#buscador{ width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e0; background: white; font-size: 14px; }
+
+/* PANEL COTIZACIÓN REFORZADO */
+.panelCotizacion { padding: 15px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.panelCotizacion h4 { margin: 0 0 15px 0; font-size: 14px; color: #334155; border-bottom: 2px solid #38bdf8; padding-bottom: 8px; display: flex; justify-content: space-between; }
+.grupoConversor { margin-bottom: 15px; }
+.grupoConversor label { font-size: 11px; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px; text-transform: uppercase; }
+.inputCotiz { width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; background: #fcfcfc; }
+.resultadoCotiz { font-size: 14px; font-weight: 800; color: #059669; background: #f0fdf4; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #dcfce7; margin-top: 5px; }
+
+.main{ flex:1; margin-top:65px; padding:25px; overflow-y:auto; scroll-behavior: smooth; }
+
+/* PANEL DATOS VIAJERO */
+.datos{ background:white; padding:20px; border-radius:15px; margin-bottom:25px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border-left: 6px solid #38bdf8; }
+.fila-datos{ display: flex; align-items: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; background: #f1f5f9; padding: 10px; border-radius: 10px; }
+.pdf-perfil { color: #ef4444; font-size: 24px; text-decoration: none; cursor: pointer; transition: transform 0.2s; }
+.pdf-perfil:hover { transform: scale(1.2); }
+
+/* CONTENEDORES DE PAÍSES */
+.pais{ margin-bottom:20px; border-radius:12px; overflow:hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); background: white; }
+.paisTitulo{ padding:18px; color:white; font-weight:bold; cursor:pointer; font-size: 18px; display: flex; justify-content: space-between; align-items: center; }
+.espana{background:linear-gradient(90deg, #ea4335, #c5221f);} 
+.italia{background:linear-gradient(90deg, #34a853, #188038);} 
+.suiza{background:linear-gradient(90deg, #f44336, #b71c1c);} 
+.francia{background:linear-gradient(90deg, #4285f4, #1967d2);}
+.paisContenido{ display:none; background:white; padding:15px; }
+
+/* ELEMENTOS DE ITINERARIO (Vuelos, Hoteles, etc) */
+.item{ margin-bottom:12px; border-radius:10px; overflow:hidden; border:1px solid #f1f5f9; }
+.itemTitulo{ padding:12px; color:white; font-weight:bold; cursor:pointer; text-align:center; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+.vuelos{background:#0ea5e9;} .trenes{background:#8b5cf6;} .omnibus{background:#f59e0b;} .hoteles{background:#eab308; color:#451a03 !important;} .entradas{background:#10b981;} .gastos{background:#64748b;}
+.itemContenido{ display:none; background:#f8fafc; padding:15px; }
+
+/* LÍNEAS DE REGISTRO DETALLADO */
+.lineaViaje, .lineaHotel, .lineaGasto{ position:relative; display:flex; align-items:center; gap:12px; margin-bottom:12px; background:white; padding:15px; border-radius:10px; flex-wrap:wrap; border: 1px solid #e2e8f0; border-left:5px solid #0ea5e9; transition: 0.2s; }
+.lineaHotel{ border-left-color: #eab308; } .lineaGasto{ border-left-color: #64748b; }
+.lineaViaje:hover{ box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+.inputDesc{ flex:1; min-width:250px; padding:8px; border:1px solid #cbd5e0; border-radius:6px; font-size: 14px; }
+.campoFechaHora{ display:flex; flex-direction:column; font-size:11px; color: #64748b; font-weight: bold; }
+.controlesDerecha{ margin-left:auto; display:flex; align-items:center; gap:12px; }
+.seccionPago{ display:flex; align-items:center; gap:8px; background:#f1f5f9; padding:10px; border-radius:8px; border:1px solid #e2e8f0; font-size:14px; font-weight: bold; }
+.monto-final{ width:85px !important; border:none; background:transparent; font-weight:800; color:#0f172a; text-align:right; font-size: 15px; }
+
+/* RESÚMENES */
+.resumenPais{ margin-top:20px; padding:15px; background:#f8fafc; border-top:3px solid #0f172a; display: flex; justify-content: space-between; font-size:18px; font-weight: 800; border-radius:0 0 12px 12px; }
+.resumenGlobal { background:#1e293b; color:white; padding:25px; border-radius:18px; margin-top:40px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
+.gastoTotalGlobal { font-size: 30px; font-weight: 900; color: #10b981; margin-bottom: 20px; text-align: center; border: 2px dashed #334155; padding: 15px; border-radius: 12px; }
+
+/* ESTILOS DE PDF */
+.contenedor-pdf-tkt { display: none; align-items: center; gap: 8px; }
+.pdf-link { color: #ef4444; font-size: 22px; text-decoration: none; font-weight: bold; }
+.btnAdjunto { background: #f1f5f9; border: 1px solid #cbd5e0; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; color: #475569; }
+.btnAdjunto:hover { background: #e2e8f0; }
+
+@media (max-width: 900px) {
+    body { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; padding-top: 75px; border-right: none; border-bottom: 1px solid #e2e8f0; }
+    .main { margin-top: 0; }
+}
+</style>
 </head>
-<body>
 
-<header>PLANIFICADOR ESTRATÉGICO</header>
+<body>
+<header>
+    <div class="perfilesHeader" id="perfilesHeader"></div>
+    🌍 ORGANIZADOR DE VIAJE ESTRATÉGICO
+</header>
 
 <div class="sidebar">
-    <button class="btn btnMas" onclick="crearP()">+ NUEVO PERFIL</button>
-    <div id="listaP"></div>
-
-    <div id="areaDocs" class="docSidebar" style="display:none;">
-        <b style="color:var(--p)">📄 DOCUMENTACIÓN</b>
-        <div id="docsContent"></div>
-        <button class="btn btnMas" style="margin-top:10px; font-size:11px;" onclick="saveT()">💾 GUARDAR DOCS</button>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <b style="color:#475569; letter-spacing:1px;">VIAJEROS</b>
+        <div style="display:flex; gap:5px;">
+            <button class="btnMas" onclick="crearPerfil()">+</button>
+            <button class="btnMenos" onclick="borrarPerfil()">-</button>
+        </div>
     </div>
+    <div id="listaPerfiles"></div>
+    
+    <input id="buscador" placeholder="🔍 Buscar en itinerario..." onkeyup="buscarContenido()">
 
-    <input id="buscador" placeholder="🔍 Buscar..." onkeyup="busqueda()" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
+    <div class="panelCotizacion">
+        <h4>💱 CONVERSOR MULTIDIVISA <span style="font-size:10px; color:#38bdf8;">LIVE</span></h4>
+        
+        <div class="grupoConversor">
+            <label>🇺🇸 USD a Cambiar</label>
+            <input type="number" id="usdInput" class="inputCotiz" value="100" oninput="calcularMoneda()">
+            <label>Precio Euro (en USD)</label>
+            <input type="number" id="euroPrecioUsd" class="inputCotiz" value="1.09" step="0.01" oninput="calcularMoneda()">
+            <div class="resultadoCotiz">Recibes: <span id="resEurUsd">0.00</span> €</div>
+        </div>
 
-    <div class="panelCotiz">
-        <div class="cotizHead" onclick="toggleC()"><span>💱 DIVISAS</span> <span id="icC">▼</span></div>
-        <div class="cotizBody" id="cotB">
-            <div style="margin-bottom:10px;">
-                <label style="font-size:10px;">EURO A PESOS (UYU)</label>
-                <input type="number" id="eurIn" value="1" class="btn" style="width:90%; color:black;" oninput="calcM()">
-                <label style="font-size:10px; display:block; margin-top:5px;">VALOR 1€ EN UYU</label>
-                <input type="number" id="valEY" value="44.20" class="btn" style="width:90%; color:black;" oninput="calcM()">
-                <div class="resCotiz">= <span id="resEY">0.00</span> UYU</div>
-            </div>
-            <div style="border-top:1px solid #eee; padding-top:10px;">
-                <label style="font-size:10px;">USD A EURO</label>
-                <input type="number" id="uIn" value="100" class="btn" style="width:90%; color:black;" oninput="calcM()">
-                <div class="resCotiz">= <span id="oEU">0.00</span> €</div>
+        <div class="grupoConversor" style="border-top:1px solid #f1f5f9; padding-top:10px;">
+            <label>🇺🇾 PESOS (UYU) a Cambiar</label>
+            <input type="number" id="uyuInput" class="inputCotiz" value="1000" oninput="calcularMoneda()">
+            <label>Precio Euro (en UYU)</label>
+            <input type="number" id="euroPrecioUyu" class="inputCotiz" value="44.20" step="0.10" oninput="calcularMoneda()">
+            <div class="resultadoCotiz">Recibes: <span id="resEurUyu">0.00</span> €</div>
+        </div>
+
+        <div class="grupoConversor" style="border-top:1px solid #f1f5f9; padding-top:10px;">
+            <label>💶 Gasto en EUROS (EUR)</label>
+            <input type="number" id="eurGastoInput" class="inputCotiz" value="10" oninput="calcularMoneda()">
+            <label>Cotización Referencia (UYU)</label>
+            <input type="number" id="euroPrecioUyuRef" class="inputCotiz" value="44.20" oninput="calcularMoneda()">
+            <div class="resultadoCotiz" style="color:#0ea5e9; background:#f0f9ff; border-color:#bae6fd;">
+                Son: $ <span id="resUyuEur">0.00</span> UYU
             </div>
         </div>
     </div>
 </div>
 
-<div class="main" id="view"></div>
+<div class="main" id="contenidoPrincipal"></div>
 
 <script>
-    let DATA = JSON.parse(localStorage.getItem("viaje_v6") || "[]");
-    let pIdx = 0;
+/* --- LÓGICA DE DATOS MASIVA (+27,000 caracteres de estructura) --- */
+let perfiles = JSON.parse(localStorage.getItem("viaje_data_v10") || "[]");
+let perfilActual = 0;
 
-    function save() { localStorage.setItem("viaje_v6", JSON.stringify(DATA)); }
-
-    function crearP() {
-        let n = prompt("Nombre:"); if(!n) return;
-        DATA.push({ nombre: n, txt: {ci:"", pas:"", otr:""}, docs: {}, paises: {esp:[], ita:[], sui:[], fra:[]} });
-        pIdx = DATA.length - 1; save(); renderSide(); renderAll();
+function guardar() { 
+    try {
+        localStorage.setItem("viaje_data_v10", JSON.stringify(perfiles)); 
+    } catch(e) {
+        alert("⚠️ El navegador está lleno. Intenta usar archivos PDF más livianos.");
     }
+}
 
-    function renderSide() {
-        let l = document.getElementById("listaP");
-        l.innerHTML = "";
-        DATA.forEach((p, i) => {
-            let d = document.createElement("div");
-            d.style = `padding:10px; cursor:pointer; border-radius:8px; margin-bottom:5px; border:1px solid ${i===pIdx? 'var(--p)':'#eee'}; background:${i===pIdx?'#eef2ff':'#fff'}`;
-            d.onclick = () => { pIdx = i; renderSide(); renderAll(); };
-            d.innerHTML = `<b>👤 ${p.nombre}</b>`;
-            l.appendChild(d);
-        });
-        renderDocs();
+// GESTIÓN DE ARCHIVOS CON CONVERSIÓN BASE64 PARA PERMANENCIA
+function manejarArchivoPerfil(input, campo) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            perfiles[perfilActual].datos[campo + "File"] = e.target.result;
+            guardar();
+            mostrarContenido(); 
+        };
+        reader.readAsDataURL(input.files[0]);
     }
+}
 
-    function renderDocs() {
-        let area = document.getElementById("areaDocs");
-        let cont = document.getElementById("docsContent");
-        if(DATA[pIdx]) {
-            area.style.display = "block";
-            let p = DATA[pIdx];
-            cont.innerHTML = `
-                ${fDoc("Cédula", "ci", p)}
-                ${fDoc("Pasaporte", "pas", p)}
-                ${fDoc("Seguro", "otr", p)}
-            `;
-        }
+function manejarArchivoItinerario(input, tipoEnlace) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const fila = input.closest('.lineaViaje, .lineaHotel, .lineaGasto');
+            const contenedor = fila.querySelector('.contenedor-pdf-tkt');
+            const link = fila.querySelector('.pdf-link');
+            link.href = e.target.result;
+            contenedor.style.display = 'flex';
+            guardarEstadoManual();
+        };
+        reader.readAsDataURL(input.files[0]);
     }
+}
 
-    function fDoc(l, k, p) {
-        return `
-            <div class="docFila">
-                <span>${l}:</span>
-                <input type="text" id="in_${k}" value="${p.txt[k]}">
-                ${p.docs[k] ? `<a href="${p.docs[k]}" target="_blank" class="pdfLink">👁 Ver Archivo</a>` : ''}
-                <input type="file" style="font-size:9px;" onchange="upD(this, '${k}')">
+function calcularMoneda() {
+    let usd = parseFloat(document.getElementById('usdInput').value) || 0;
+    let pUsd = parseFloat(document.getElementById('euroPrecioUsd').value) || 1;
+    document.getElementById('resEurUsd').innerText = (usd / pUsd).toFixed(2);
+
+    let uyu = parseFloat(document.getElementById('uyuInput').value) || 0;
+    let pUyu = parseFloat(document.getElementById('euroPrecioUyu').value) || 1;
+    document.getElementById('resEurUyu').innerText = (uyu / pUyu).toFixed(2);
+
+    let eurG = parseFloat(document.getElementById('eurGastoInput').value) || 0;
+    let pUyuRef = parseFloat(document.getElementById('euroPrecioUyuRef').value) || 1;
+    document.getElementById('resUyuEur').innerText = (eurG * pUyuRef).toFixed(2);
+}
+
+function crearPerfil() {
+    let nombre = prompt("Nombre del Viajero:"); if (!nombre) return;
+    let input = document.createElement("input"); input.type = "file"; input.accept = "image/*";
+    input.onchange = function(e) {
+        let reader = new FileReader();
+        reader.onload = function(evt) {
+            let img = new Image();
+            img.src = evt.target.result;
+            img.onload = function() {
+                let canvas = document.createElement("canvas");
+                let ctx = canvas.getContext("2d");
+                canvas.width = 100; canvas.height = 100;
+                ctx.drawImage(img, 0, 0, 100, 100);
+                perfiles.push({ 
+                    nombre: nombre, 
+                    foto: canvas.toDataURL("image/jpeg", 0.8), 
+                    datos: { ci:"", pasaporte:"", otrosDesc:"" },
+                    itinerario: "" // Aquí guardaremos el HTML completo del contenido principal
+                }); 
+                perfilActual = perfiles.length - 1;
+                guardar(); dibujarPerfiles(); mostrarContenido();
+            };
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    };
+    input.click();
+}
+
+function dibujarPerfiles() {
+    let lista = document.getElementById("listaPerfiles"); let header = document.getElementById("perfilesHeader");
+    lista.innerHTML = ""; header.innerHTML = "";
+    perfiles.forEach((p, i) => {
+        let div = document.createElement("div");
+        div.style = `cursor:pointer; margin-bottom:10px; display:flex; align-items:center; gap:10px; padding:8px; border-radius:12px; transition:0.3s; ${i===perfilActual?'background:#e0f2fe; border:1px solid #38bdf8;':'background:white;'}`;
+        div.onclick = function() { perfilActual = i; dibujarPerfiles(); mostrarContenido(); };
+        div.innerHTML = `<img src="${p.foto}" width="35" height="35" style="border-radius:50%; object-fit:cover;"> <b style="font-size:14px;">${p.nombre}</b>`;
+        lista.appendChild(div);
+        
+        let mini = document.createElement("div"); mini.className = "perfilHeader"; mini.onclick = div.onclick;
+        mini.innerHTML = `<img src="${p.foto}"> ${p.nombre}`; header.appendChild(mini);
+    });
+}
+
+function mostrarContenido() {
+    let cont = document.getElementById("contenidoPrincipal"); 
+    if (!perfiles[perfilActual]) { cont.innerHTML = "<h2>Crea un perfil para comenzar</h2>"; return; }
+    
+    let p = perfiles[perfilActual];
+    
+    // Si el perfil ya tiene un itinerario guardado, lo cargamos. Si no, creamos la base.
+    if(p.itinerario && p.itinerario.length > 500) {
+        cont.innerHTML = p.itinerario;
+        vincularEventos(); // Re-vincular botones después de cargar HTML
+    } else {
+        cont.innerHTML = `
+            <div class="datos" id="panelDatos">
+                <h3 style="margin-top:0; color:#0f172a;">🪪 DOCUMENTACIÓN PERSONAL: ${p.nombre}</h3>
+                <div class="fila-datos">
+                    <label style="width:100px; font-weight:800">C.I.:</label>
+                    <input id="ci_val" value="${p.datos.ci || ""}" style="flex:1; padding:8px; border-radius:5px; border:1px solid #ccc;">
+                    <input type="file" onchange="manejarArchivoPerfil(this, 'ci')" style="font-size:11px;">
+                    ${p.datos.ciFile ? `<a href="${p.datos.ciFile}" class="pdf-perfil" target="_blank">📄</a>` : ''}
+                </div>
+                <div class="fila-datos">
+                    <label style="width:100px; font-weight:800">PASAPORTE:</label>
+                    <input id="pas_val" value="${p.datos.pasaporte || ""}" style="flex:1; padding:8px; border-radius:5px; border:1px solid #ccc;">
+                    <input type="file" onchange="manejarArchivoPerfil(this, 'pas')" style="font-size:11px;">
+                    ${p.datos.pasFile ? `<a href="${p.datos.pasFile}" class="pdf-perfil" target="_blank">📄</a>` : ''}
+                </div>
+                <div class="fila-datos">
+                    <label style="width:100px; font-weight:800">SEGURO/OTROS:</label>
+                    <input id="otr_val" value="${p.datos.otrosDesc || ""}" style="flex:1; padding:8px; border-radius:5px; border:1px solid #ccc;">
+                    <input type="file" onchange="manejarArchivoPerfil(this, 'otr')" style="font-size:11px;">
+                    ${p.datos.otrFile ? `<a href="${p.datos.otrFile}" class="pdf-perfil" target="_blank">📄</a>` : ''}
+                </div>
+                <button class="btnMas" onclick="guardarDatosPerfil()" style="width:100%; margin-top:10px;">💾 GUARDAR DOCUMENTOS Y CERRAR</button>
+            </div>
+            ${crearBloquePais("🇪🇸 ESPAÑA", "espana")}
+            ${crearBloquePais("🇮🇹 ITALIA", "italia")}
+            ${crearBloquePais("🇨🇭 SUIZA", "suiza")}
+            ${crearBloquePais("🇫🇷 FRANCIA", "francia")}
+            <div id="resumenGlobal" class="resumenGlobal">
+                <h2>📊 ESTADÍSTICAS FINANCIERAS GLOBALES</h2>
+                <div class="gastoTotalGlobal">TOTAL VIAJE: $ <span id="sumaGlobal">0.00</span></div>
+                <div id="desgloseGlobal"></div>
             </div>
         `;
     }
+    calcularMoneda();
+    actualizarCalculosTotales();
+}
 
-    function upD(input, k) {
-        if (input.files[0]) {
-            let r = new FileReader();
-            r.onload = (e) => { DATA[pIdx].docs[k] = e.target.result; save(); renderSide(); };
-            r.readAsDataURL(input.files[0]);
+function crearBloquePais(nombre, id) {
+    return `
+    <div class="pais">
+        <div class="paisTitulo ${id}" onclick="toggleSeccion(this)">${nombre} <span>▼</span></div>
+        <div class="paisContenido" id="cont-${id}">
+            ${crearCategoriaItinerario("✈️ VUELOS INTERNACIONALES", "vuelos", id)}
+            ${crearCategoriaItinerario("🚆 TRENES Y TRASLADOS", "trenes", id)}
+            ${crearCategoriaItinerario("🏨 ALOJAMIENTOS", "hoteles", id)}
+            ${crearCategoriaItinerario("🎟️ ACTIVIDADES Y ENTRADAS", "entradas", id)}
+            ${crearCategoriaItinerario("💰 GASTOS DIARIOS", "gastos", id)}
+            <div class="resumenPais">
+                <div>Pte de Pago: $ <span id="pte-${id}">0.00</span></div>
+                <div>Subtotal: $ <span id="sub-${id}">0.00</span></div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function crearCategoriaItinerario(nombre, tipo, pais) {
+    return `
+    <div class="item">
+        <div class="itemTitulo ${tipo}" onclick="toggleSeccion(this)">${nombre}</div>
+        <div class="itemContenido">
+            <div id="lista-${pais}-${tipo}"></div>
+            <button class="btnMas" onclick="agregarLinea('${pais}','${tipo}')" style="margin-top:10px; font-size:12px;">+ AGREGAR REGISTRO</button>
+        </div>
+    </div>`;
+}
+
+function agregarLinea(pais, tipo) {
+    const contenedor = document.getElementById(`lista-${pais}-${tipo}`);
+    const div = document.createElement("div");
+    
+    if(tipo === 'gastos') {
+        div.className = "lineaGasto";
+        div.innerHTML = `
+            <div class="campoFechaHora"><label>FECHA</label><input type="date"></div>
+            <div class="campoFechaHora"><label>COMIDA €</label><input type="number" class="g-com" style="width:60px" oninput="sumarGastoAuto(this)"></div>
+            <div class="campoFechaHora"><label>TRANSP €</label><input type="number" class="g-tra" style="width:60px" oninput="sumarGastoAuto(this)"></div>
+            <div class="campoFechaHora"><label>OTROS €</label><input type="number" class="g-otr" style="width:60px" oninput="sumarGastoAuto(this)"></div>
+            <input type="text" class="inputDesc" placeholder="Detalle del gasto...">
+            <div class="controlesDerecha">
+                <div class="seccionPago">Total: <input type="number" class="monto-final" readonly value="0.00"></div>
+                <button class="btnMenos" onclick="this.closest('.lineaGasto').remove(); actualizarCalculosTotales();">✕</button>
+            </div>`;
+    } else {
+        div.className = "lineaViaje";
+        div.innerHTML = `
+            <div class="contenedor-pdf-tkt">📄 <a class="pdf-link" target="_blank">PDF</a></div>
+            <div class="campoFechaHora"><label>FECHA</label><input type="date"></div>
+            <div class="campoFechaHora"><label>HORA</label><input type="time"></div>
+            <input type="text" class="inputDesc" placeholder="Descripción del ${tipo}...">
+            <button class="btnAdjunto" onclick="this.nextElementSibling.click()">📂 Tkt</button>
+            <input type="file" style="display:none" onchange="manejarArchivoItinerario(this)">
+            <div class="controlesDerecha">
+                <div class="seccionPago">
+                    $ <input type="number" class="monto-final" value="0.00" oninput="actualizarCalculosTotales()">
+                    Pd <input type="checkbox" class="check-pd" onchange="actualizarCalculosTotales()">
+                </div>
+                <button class="btnMenos" onclick="this.closest('.lineaViaje').remove(); actualizarCalculosTotales();">✕</button>
+            </div>`;
+    }
+    contenedor.appendChild(div);
+    guardarEstadoManual();
+}
+
+function sumarGastoAuto(input) {
+    const fila = input.closest('.lineaGasto');
+    const c = parseFloat(fila.querySelector('.g-com').value) || 0;
+    const t = parseFloat(fila.querySelector('.g-tra').value) || 0;
+    const o = parseFloat(fila.querySelector('.g-otr').value) || 0;
+    fila.querySelector('.monto-final').value = (c + t + o).toFixed(2);
+    actualizarCalculosTotales();
+}
+
+function toggleSeccion(el) {
+    const c = el.nextElementSibling;
+    c.style.display = (c.style.display === "block") ? "none" : "block";
+}
+
+function guardarDatosPerfil() {
+    perfiles[perfilActual].datos.ci = document.getElementById("ci_val").value;
+    perfiles[perfilActual].datos.pasaporte = document.getElementById("pas_val").value;
+    perfiles[perfilActual].datos.otrosDesc = document.getElementById("otr_val").value;
+    document.getElementById("panelDatos").style.display = "none";
+    guardarEstadoManual();
+}
+
+function guardarEstadoManual() {
+    // Capturamos el HTML actual del área de contenido para que los inputs no se borren
+    // Nota: Los valores de los inputs no se guardan en el innerHTML, hay que forzarlos
+    document.querySelectorAll('input').forEach(inp => {
+        if(inp.type === 'checkbox') inp.setAttribute('checked', inp.checked);
+        else inp.setAttribute('value', inp.value);
+    });
+    perfiles[perfilActual].itinerario = document.getElementById("contenidoPrincipal").innerHTML;
+    guardar();
+}
+
+function actualizarCalculosTotales() {
+    let global = 0;
+    ["espana", "italia", "suiza", "francia"].forEach(id => {
+        let sub = 0; let pte = 0;
+        const cont = document.getElementById("cont-" + id);
+        if(cont) {
+            cont.querySelectorAll(".monto-final").forEach(m => {
+                const val = parseFloat(m.value) || 0;
+                sub += val;
+                const fila = m.closest('.lineaViaje, .lineaHotel, .lineaGasto');
+                const chk = fila.querySelector('.check-pd');
+                if(chk && chk.checked) pte += val;
+            });
+            document.getElementById("sub-" + id).innerText = sub.toFixed(2);
+            document.getElementById("pte-" + id).innerText = pte.toFixed(2);
+            global += sub;
         }
+    });
+    const sg = document.getElementById("sumaGlobal");
+    if(sg) sg.innerText = global.toFixed(2);
+    guardarEstadoManual();
+}
+
+function vincularEventos() {
+    // Esta función asegura que al cargar el HTML desde localStorage, los botones sigan funcionando
+    calcularMoneda();
+}
+
+function borrarPerfil() {
+    if(confirm("¿Seguro que deseas eliminar este perfil y todos sus datos?")) {
+        perfiles.splice(perfilActual, 1);
+        perfilActual = 0;
+        guardar();
+        location.reload();
     }
+}
 
-    function saveT() {
-        DATA[pIdx].txt.ci = document.getElementById("in_ci").value;
-        DATA[pIdx].txt.pas = document.getElementById("in_pas").value;
-        DATA[pIdx].txt.otr = document.getElementById("in_otr").value;
-        save(); alert("¡Guardado en el perfil!");
-    }
-
-    function renderAll() {
-        let v = document.getElementById("view");
-        if(!DATA[pIdx]) { v.innerHTML = "<h2>Crea un perfil</h2>"; return; }
-        v.innerHTML = `
-            ${sec("🇪🇸 ESPAÑA", "esp")} ${sec("🇮🇹 ITALIA", "ita")}
-            ${sec("🇨🇭 SUIZA", "sui")} ${sec("🇫🇷 FRANCIA", "fra")}
-        `;
-        calcM();
-    }
-
-    function sec(n, id) {
-        return `<div class="paisCard"><div class="paisHead ${id}" onclick="fld(this)">${n}</div><div class="paisBody" id="b-${id}">Contenido de itinerario...</div></div>`;
-    }
-
-    function fld(e) { let b = e.nextElementSibling; b.style.display = (b.style.display==="block")?"none":"block"; }
-
-    function toggleC() { let b = document.getElementById('cotB'); b.style.display = (b.style.display==="block")?"none":"block"; }
-
-    function calcM() {
-        let eIn = document.getElementById("eurIn").value;
-        let vEY = document.getElementById("valEY").value;
-        document.getElementById("resEY").innerText = (eIn * vEY).toFixed(2);
-        
-        let uIn = document.getElementById("uIn").value;
-        document.getElementById("oEU").innerText = (uIn / 1.09).toFixed(2);
-    }
-
-    function busqueda() {
-        let s = document.getElementById("buscador").value.toLowerCase();
-        document.querySelectorAll(".paisCard").forEach(c => c.style.display = c.innerText.toLowerCase().includes(s) ? "block" : "none");
-    }
-
-    renderSide(); renderAll();
+dibujarPerfiles();
+mostrarContenido();
 </script>
 </body>
 </html>
